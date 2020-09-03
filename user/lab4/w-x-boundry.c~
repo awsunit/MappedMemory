@@ -1,0 +1,82 @@
+/*
+    Test for across boundry writes
+*/
+#include <lib/usyscall.h>
+#include <lib/stdio.h>
+#include <lib/stddef.h>
+#include <lib/string.h>
+#include <lib/test.h>
+int PG_SIZE = 4096;
+
+void printAddr(vaddr_t vaddr, vaddr_t end) {
+  while (vaddr != end) {
+    printf("%s", (char*)vaddr);
+    vaddr += sizeof(char*);
+  }
+}
+
+vaddr_t sm_write (void *vaddr, char *buf, size_t count) {
+  // count is number of writes to pointer address
+  // 4096/sizeof(char*)
+  //  printf("we are going to write address: %p\n", (void*)vaddr);
+  // *((char*)vaddr) = *buf;
+  // printf("sm have %s\n", (char*)vaddr);
+  for (int i = 0; i < count; i++) {
+    *((char*)vaddr) = *buf;
+    buf++;
+    vaddr += sizeof(char*);
+  }
+  return (vaddr_t)vaddr;
+}
+
+int main()
+{
+
+//int errno, status;
+  // int status;
+  int size = 2;
+  char name[4] = "reg\0";
+  // char *word = "ET PHONE HOME\0";
+  char buf[4096]; // pg size
+  void* addr;
+
+
+  createSharedRegion(name, size, 0);
+  map(name, &addr);
+
+  printf("we are mapped with a value of: %p\n", addr);
+  *((char*)addr) = *name;
+  printf("we now have %s\n", (char*)addr);
+   
+
+
+  // populate buf:
+  char *tb = &buf[0];
+  for (int i = 0; i < 4096;i++) {
+    *tb = (char)i;
+    tb++;
+  }
+  /*
+  tb = &buf[0];
+  for (int i = 0; i < PG_SIZE; i++) {
+    printf("%d", *tb);
+    tb++;
+  }
+
+  */
+  // write buf twice to region
+  int times = 2;
+  vaddr_t nv;
+  for (int i = 0; i < times; i++) {
+    int count = PG_SIZE/sizeof(char*);
+    printf("count: %d", count);
+    nv = sm_write(addr, buf, count);
+  }
+  printAddr((vaddr_t)addr, nv);
+
+  unmap(name, addr);
+  destroySharedRegion(name);
+
+  pass("w-x-boundry-test");
+  exit(0);
+}

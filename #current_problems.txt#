@@ -1,0 +1,42 @@
+# The issue: persisting regions/ process isolation of shared regions
+    - if sharedDestroyed not called, region remains available to anybody
+    - user can: write program to iterate every possible name, asking kernel for access, gaining access to any matching name, even if they did not create/inherit
+
+## possible changes
+1. add list to kernel, with structs of {pid, List[smscontext]}
+    - handles searches with the list
+
+### problems
+    - forking
+    - If a context should be destroyed (exiting process is last reference to context), has to search each node's list inside kernel list for any pid still accessing context
+
+2. force user to create region on createShared
+    - easy and nice for current modification
+
+### problems
+    - poor user experience? Not really, they should be expecting to get an addr at some time if they called this, plus we aren't allowing them to choose an inital addr anyways. 
+
+
+
+
+
+#### change in design
+
+contexts list, where nodes are a struct {pid, List[smscontext]}
+
+on create:
+find context with name:
+check for pid
+if not there: create node, create context as currently described, attach to k list
+else: check struct List for name, handle as currently described
+
+on destroy:
+search kernel list for pid
+if not there: NOT_EXISTS
+on map:
+
+on unmap:
+
+on fork:
+
+on exit:

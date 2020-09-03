@@ -1,0 +1,12 @@
+1. Line 44, pmem_info()
+2. Main is at 0xffffffff80104f05, gdb does not work with physical address.
+3. OSV maps the kernel and user-application into the same address space so when
+   a user invokes a system call, the kernel’s system call code can directly
+   refer to user memory.
+4. Malloc is used for a user process to allocate heap space. Kmalloc is for the
+   kernel to allocate kernel memory. Calls to kmalloc returns a kernel virtual address that you can access directly. Printf allows a user process to print to the
+   stdout provided by OSV while the kernel uses kprintf to print to stdout
+   provided by qemu.
+5. trap (tf=0xffffffff8011c4d0 <sched_lock>) at arch/x86_64/kernel/trap.c:69
+6. 176 bytes
+7. alltraps(), trap(), trap_invoke_handler(), x86_64_syscall_trap_handler(), syscall()

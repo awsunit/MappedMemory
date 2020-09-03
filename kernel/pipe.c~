@@ -1,0 +1,70 @@
+/*
+/
+  Copyright 2020
+  Shangjin Li
+  Todd Gilbert
+
+  This file contains definitions for a pipe implementation.
+
+/
+*/
+/**/
+#include <kernel/pipe.h>
+#include <kernel/kmalloc.h>
+#include <kernel/console.h>
+#include <lib/errcode.h>
+#include <lib/string.h>
+/**/
+err_t kpipe_init(struct file **f, int fd_reader, int fd_writer) {
+//err_t kpipe_init(struct file **f, int fd_reader, int fd_writer) {
+  struct kpipe *p;
+
+  // alloc space for struct
+  p = kpipe_allocate();
+  kassert(p);
+  // lock
+  spinlock_init(&p->pipe_lock, 0);
+  // cv's
+  condvar_init(&p->pipe_notempty_cv);
+  condvar_init(&p->pipe_full_cv);
+  // meta
+  p->readers = 2;
+  p->fd_reader = fd_reader;
+  p->fd_writer = fd_writer;
+  p->read_ofs = 0;
+  p->write_ofs = 0;
+
+  *f->kpipe = p;
+  
+  return ERR_OK;
+}
+/**/
+struct kpipe* kpipe_allocate() {
+  struct kpipe *p;
+  p = NULL;
+  if ((p = kmalloc(sizeof(struct kpipe))) != NULL) {
+      memset(p, 0, sizeof(struct kpipe));
+  }
+  return p;
+}
+/**/
+void kpipe_close(struct kpipe *p) {
+  // last accessor of pipe?
+  if (p->readers == 1) {
+    kfree(p);
+  } else {
+    p->readers -= 1;
+  }
+}
+/**/
+int kpipe_read(struct kpipe *p, const char *buf, size_t count) {
+
+  return ERR_PIPEDEAF;  // change-------------------------------------------
+}
+/**/
+int  kpipe_write(struct kpipe *p, const char *buf, size_t count) {
+
+  return ERR_PIPEDEAF;  // change ----------------------------------------------
+}
+/**/
+/*EOF*/

@@ -1,0 +1,7 @@
+1. User-level excution resumes at the faulting instruction because the kernel might be able to solve the page fault issue by fixing the page table for the process.
+2. As any access to the stack region is considered a valid stack access, the kernel is unable to decide between a stray pointer and normal stack operations
+3. It is possible if return can trap into kernel. The kernel can free any pages with address lower than rsp since rsp represents the top of stack, any pages that contain addresses lower than rsp are not in-use.
+4. Calling malloc and free allows the OS to divide the heap into separately organizable blocks, each block uses a data structure to keep track of status of the block.
+5. Call vpmap_flush_tlb() when you modify entry permissions.
+
+Total time spent for both: ~35

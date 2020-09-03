@@ -1,0 +1,9 @@
+*.swp
+.gdbinit
+build/
+entry_ap
+*vectors.S
+*output
+
+# JetBrains IDEs
+.idea/

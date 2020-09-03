@@ -1,0 +1,4 @@
+## issues
+    - user can: write program to iterate every possible name, asking kernel for access, gaining access to any matching name, even if they did not create/inherit
+    - kernel may split up process work such that p1 created region, but as it is done using, but wants to execute other code, kernel sends the call to unmap/read/w.e. via p2, which will not match any pid's
+    - copying during fork -> NEED child pid -> use address space???

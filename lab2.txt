@@ -1,0 +1,16 @@
+1.
+   The function sched_ready() updates a thread's state to READY. Then, sched_sched()
+   appends the thread to the ready_queue and calls cpu_switch_thread(), which handles
+   the context switch and returns the previously running process to sched_sched(),
+   who calls thread_cleanup iff returned a zombie.
+
+   In short:
+      sched_ready() allows for sched_sched() to schedule a thread (context switch) via cpu_switch_thread().
+
+2.
+
+  1. When creating new process inside proc_fork, the parent has its return information in a trapframe, located on kernel's stack.
+  2. Set up child's trapframe/stack to look exactly like parents, with exception to return values, so that when when child is scheduled to run, it looks like child is returning from a trap call. 
+
+3.
+    A total of ~50 hours were spent on this project.
